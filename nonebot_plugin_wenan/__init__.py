@@ -22,7 +22,7 @@ __plugin_meta__ = PluginMetadata(
     # 若插件可以保证兼容所有适配器（即仅使用基本适配器功能）可不填写，否则应该列出插件支持的适配器。
 )
 plugin_config = Config.parse_obj(get_driver().config)
-cmds_config = plugin_config.data
+cmds_config = plugin_config.api_data
 
 cmds = []
 for i in cmds_config:
