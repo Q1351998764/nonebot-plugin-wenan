@@ -1,10 +1,10 @@
 from pydantic import BaseModel, Extra
 import yaml
 import nonebot
+from nonebot.config import Config as NBConfig
 from pathlib import Path
 
-
-config_path = 'config/wenan_api_config.yml'
+config_path = Path('config/wenan_api_config.yml')
 
 CONFIG_TEMPLATE = {
     #key值设置为要触发的词
@@ -37,7 +37,7 @@ CONFIG_TEMPLATE = {
 # 检查config文件夹是否存在 不存在则创建
 if not Path("config").exists():
     Path("config").mkdir()
-if not Path(config_path).exists():
+if not config_path.exists():
     with open(config_path, 'w', encoding='utf-8') as f:
         yaml.dump(CONFIG_TEMPLATE, f, allow_unicode=True)  
 
@@ -46,7 +46,15 @@ global_config = nonebot.get_driver().config
 with open(config_path,'r') as f:
     data = yaml.load(f,Loader=yaml.FullLoader)#读取yaml文件
 
-class Config(BaseModel, extra=Extra.ignore):
-    """Plugin Config Here"""
-    data = data
-    global_config = global_config
+try:
+    class Config(BaseModel, extra=Extra.ignore, from_attributes=True):
+        """Plugin Config Here"""
+        
+        api_data: dict = data
+        global_config: NBConfig = global_config
+except:
+    class Config(BaseModel, extra=Extra.ignore):
+        """Plugin Config Here"""
+        
+        api_data: dict = data   
+        global_config: NBConfig = global_config
